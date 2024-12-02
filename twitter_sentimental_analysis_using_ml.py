@@ -34,6 +34,10 @@ with ZipFile(dataset,'r') as zip:
   zip.extractall()
   print('The dataset is extracted')
 
+pip install flask numpy pandas nltk scikit-learn
+
+pip install tweepy
+
 """**Importing the dependencies**"""
 
 import numpy as np
@@ -45,6 +49,30 @@ from sklearn.feature_extraction.text import TfidfVectorizer # to use textual dat
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+
+# Example dataset
+data = pd.DataFrame({
+    'text': ['I love this!', 'I hate this!', 'This is amazing', 'This is awful'],
+    'label': [1, 0, 1, 0]
+})
+
+# Splitting data
+X = data['text']
+y = data['label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Text vectorization
+vectorizer = TfidfVectorizer()
+X_train_vectorized = vectorizer.fit_transform(X_train)
+
+# Train a Logistic Regression model
+model = LogisticRegression()
+model.fit(X_train_vectorized, y_train)
+
+# Evaluate the model
+X_test_vectorized = vectorizer.transform(X_test)
+y_pred = model.predict(X_test_vectorized)
+print("Accuracy:", accuracy_score(y_test, y_pred))
 
 import nltk
 nltk.download('stopwords')
@@ -170,6 +198,11 @@ import pickle
 
 filename = 'trained_model.sav'
 pickle.dump(model, open(filename, 'wb'))
+import pickle
+
+# Save the model and vectorizer
+pickle.dump(model, open('trained_model.sav', 'wb'))
+pickle.dump(vectorizer, open('vectorizer.pkl', 'wb'))
 
 """**Using the saved model for future predictions**"""
 
